@@ -1,6 +1,7 @@
 package codigo;
 
 import codigo.formas.Circulo;
+import codigo.formas.Estrella;
 import codigo.formas.Forma;
 import codigo.formas.Pentagono;
 import java.awt.Color;
@@ -31,7 +32,7 @@ public class VentanaPaint extends javax.swing.JFrame {
     Graphics2D bufferGraphics, bufferGraphics2, jpanelGraphics = null;
 
     Circulo miCirculo = null;
-    Forma miForma = null;
+    Forma miForma = new Forma(-1, -1, 1, Color.WHITE, false); //para que la forma no de error
 
     public VentanaPaint() {
         initComponents();
@@ -49,7 +50,7 @@ public class VentanaPaint extends javax.swing.JFrame {
         //casteo= convertir de un tipo a otro
         //creo una imagen modificable
         bufferGraphics = buffer.createGraphics();
-        bufferGraphics2 = buffer.createGraphics();
+        bufferGraphics2 = buffer2.createGraphics();
         
         // inicializo el buffer para que se pinte de blanco entero 
         bufferGraphics.setColor(Color.WHITE);
@@ -155,38 +156,39 @@ public class VentanaPaint extends javax.swing.JFrame {
 
     private void jPanel1MouseDragged(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseDragged
         bufferGraphics.drawImage(buffer2, 0, 0, null);
-        switch (herramientas1.formaElegida) {
-            case 0:
-                bufferGraphics.setColor(colores1.colorSeleccionado);
-                bufferGraphics.fillOval(evt.getX(), evt.getY(), 5, 5);
+        switch(herramientas1.formaElegida){
+            case 0 : 
+                bufferGraphics2.setColor(colores1.colorSeleccionado);
+                bufferGraphics2.fillOval(evt.getX(), evt.getY(), 4, 4);
                 break;
-            case 1:
-                miCirculo.dibujate(bufferGraphics, evt.getX());
-                break;
-            case 5:
-                miForma.dibujate(bufferGraphics, evt.getX(), evt.getY());
-                break;
+            case 1 : miCirculo.dibujate(bufferGraphics, evt.getX());break;
+            case 5 : miForma.dibujate(bufferGraphics, evt.getX(), evt.getY());break;
+            case 256 : miForma.dibujate(bufferGraphics, evt.getX(), evt.getY());break;
         }
         repaint(0, 0, 1, 1);
     }//GEN-LAST:event_jPanel1MouseDragged
 
     private void jPanel1MousePressed(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MousePressed
-        switch (herramientas1.formaElegida) {
-            case 0:
+        switch(herramientas1.formaElegida){
+            case 0 : break;
+            case 1 : miCirculo = new Circulo(evt.getX(), evt.getY(), 1, colores1.colorSeleccionado ,herramientas1.relleno);
+                     miCirculo.dibujate(bufferGraphics, evt.getX());
                 break;
-            case 1:
-                miCirculo = new Circulo(evt.getX(), evt.getY(), 1, colores1.colorSeleccionado, false);
-                miCirculo.dibujate(bufferGraphics, evt.getX());
-                break;
-            case 5:
-                miForma = new Pentagono(evt.getX(), evt.getY(), 5, colores1.colorSeleccionado, false);
-                miForma.dibujate(bufferGraphics, evt.getX(), evt.getY());
-                break;
+            case 5 : miForma = new Pentagono(evt.getX(), evt.getY(), 5, colores1.colorSeleccionado , herramientas1.relleno);
+                     miForma.dibujate(bufferGraphics, evt.getX(), evt.getY());
+                break;  
+            case 256 : miForma = new Estrella(evt.getX(), evt.getY(), 256, colores1.colorSeleccionado , herramientas1.relleno);
+                     miForma.dibujate(bufferGraphics, evt.getX(), evt.getY());
+                break; 
         }
     }//GEN-LAST:event_jPanel1MousePressed
 
     private void jPanel1MouseReleased(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jPanel1MouseReleased
         miForma.dibujate(bufferGraphics2, evt.getX(), evt.getY());
+        //si es el círculo lo dibuja sobre el buffer2
+        if(herramientas1.formaElegida == 1){
+            miCirculo.dibujate(bufferGraphics2, evt.getX());
+        }
     }//GEN-LAST:event_jPanel1MouseReleased
 
     /**
@@ -214,7 +216,6 @@ public class VentanaPaint extends javax.swing.JFrame {
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
             java.util.logging.Logger.getLogger(VentanaPaint.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
